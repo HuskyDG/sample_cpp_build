@@ -31,12 +31,8 @@ int main(int argc, char *argv[])
 		strcpy(output, argv[3]);
 		strcpy(name, argv[1]);
 	} else {
-		printf("Enter source file: ");
-		gets(input);
-		printf("Enter target file: ");
-		gets(output);
-		printf("Enter name: ");
-		gets(name);
+		printf("usage: %s VAR_NAME SRC DEST\n", argv[0]);
+		return 1;
 	}
 	if (!check_valid_name(name)) {
 		printf("Invalid name variable!\n");
