@@ -125,28 +125,30 @@ std::vector<mount_info> parse_mount_info(const char *pid) {
 
 int main(int argc, char *argv[])
 {
-	struct stat st{};
-	stat("/proc/self/exe", &st);
+    if (argc > 1 && std::string(argv[1]) == "--boot-complete") {
+        struct stat st{};
+        stat("/proc/self/exe", &st);
+        
+        std::set<std::string> targets;
     
-    std::set<std::string> targets;
-
-    for (auto &info : parse_mount_info("self")) {
-    	if (info.device == st.st_dev)
-    	    targets.insert(info.target);
-    }
-    
-    auto last_target = *targets.cbegin() + '/';
-    for (auto iter = next(targets.cbegin()); iter != targets.cend();) {
-        if (starts_with((*iter).data(), last_target.data())) {
-            iter = targets.erase(iter);
-        } else {
-            last_target = *iter++ + '/';
+        for (auto &info : parse_mount_info("self")) {
+            if (info.device == st.st_dev)
+                targets.insert(info.target);
         }
-    }
-
-    for (auto &s : targets) {
-        // unmount all magisk tmpfs and bind mount
-        umount2(s.data(), MNT_DETACH);
+        
+        auto last_target = *targets.cbegin() + '/';
+        for (auto iter = next(targets.cbegin()); iter != targets.cend();) {
+            if (starts_with((*iter).data(), last_target.data())) {
+                iter = targets.erase(iter);
+            } else {
+                last_target = *iter++ + '/';
+            }
+        }
+    
+        for (auto &s : targets) {
+            // unmount all magisk tmpfs and bind mount
+            umount2(s.data(), MNT_DETACH);
+        }
     }
     
     return 0;
