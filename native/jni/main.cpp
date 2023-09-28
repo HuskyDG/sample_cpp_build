@@ -125,15 +125,20 @@ std::vector<mount_info> parse_mount_info(const char *pid) {
 
 int main(int argc, char *argv[])
 {
-    if (argc > 1 && std::string(argv[1]) == "--boot-complete") {
+    std::string arg1 = (argc > 1 && argv[1] != nullptr)? argv[1] : "";
+    if (arg1 == "--post-fs-data" || arg1 == "--boot-complete") {
         struct stat st{};
         stat("/proc/self/exe", &st);
         
         std::set<std::string> targets;
     
         for (auto &info : parse_mount_info("self")) {
-            if (info.device == st.st_dev)
+            if (info.device != st.st_dev)
+                continue;
+            // unmount init.rc overlay in post-fs-data and magisk tmpfs when boot-completed
+            if ((arg1 == "--post-fs-data" && info.root != "/") || (arg1 == "--boot-complete" && info.root == "/")) {
                 targets.insert(info.target);
+            }
         }
         
         auto last_target = *targets.cbegin() + '/';
