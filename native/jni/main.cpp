@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
             if (info.device != st.st_dev)
                 continue;
             // unmount init.rc overlay in post-fs-data and magisk tmpfs when boot-completed
-            if ((arg1 == "--post-fs-data" && info.root != "/") || (arg1 == "--boot-complete" && info.root == "/")) {
+            if ((arg1 == "--post-fs-data" && starts_with(info.root.data(), "/.magisk/")) || (arg1 == "--boot-complete" && info.root == "/")) {
                 targets.insert(info.target);
             }
         }
