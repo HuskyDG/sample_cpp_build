@@ -39,7 +39,7 @@ std::string get_program(int pid) {
     return buf;
 }
 
-int main(int argc, char * argv[]) {
+int trace_init_main(int argc, char *argv[]) {
     int status;
     std::set < pid_t > process;
 
