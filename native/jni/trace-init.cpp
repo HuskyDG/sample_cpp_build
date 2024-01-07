@@ -58,18 +58,7 @@ int main(int argc, char * argv[]) {
                     fprintf(stderr, "init forked %ld\n", child_pid);
                 }
                 if (WIFSTOPPED(status)) {
-                    if (WPTEVENT(status) == 0) {
-                        if (WSTOPSIG(status) != SIGSTOP && WSTOPSIG(status) != SIGTSTP && WSTOPSIG(status) != SIGTTIN && WSTOPSIG(status) != SIGTTOU) {
-                            fprintf(stderr, "inject signal sent to init: %d\n",
-                                WSTOPSIG(status));
-                            ptrace(PTRACE_CONT, pid, 0, WSTOPSIG(status));
-                        } else {
-                            fprintf(stderr, "suppress stopping signal sent to init: %d\n",
-                                WSTOPSIG(status));
-                        }
-                        continue;
-                    }
-                    ptrace(PTRACE_CONT, pid, 0, 0);
+                    ptrace(PTRACE_CONT, pid, 0, (WPTEVENT(status) == 0)? WSTOPSIG(status) : 0);
                 }
                 continue;
             }
