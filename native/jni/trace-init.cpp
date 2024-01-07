@@ -80,7 +80,7 @@ int trace_init_main(int argc, char *argv[]) {
                                 ptrace(PTRACE_CONT, pid, 0, 0);
                                 waitpid(pid, & status, __WALL);
                                 if (STOPPED_WITH(SIGSTOP, 0)) {
-                                    fprintf(stdin, "%d\n", pid);
+                                    fprintf(stdout, "%d\n", pid);
                                     ptrace(PTRACE_DETACH, pid, 0, SIGSTOP);
                                     status = 0;
                                 }
